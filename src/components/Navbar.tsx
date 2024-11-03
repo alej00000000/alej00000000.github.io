@@ -12,7 +12,7 @@ export default function Navbar() {
               <div className="bg-primary rounded-full p-2">
                 <Leaf className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-secondary">Riqueza Loca</span>
+              <span className="text-xl font-bold text-secondary">Mario es una hueva</span>
             </Link>
           </div>
           <div className="flex items-center space-x-8">

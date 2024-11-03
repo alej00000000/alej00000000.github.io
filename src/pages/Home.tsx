@@ -1,6 +1,10 @@
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Leaf, Users, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import BackgroundCarousel from '../components/BackgroundCarousel';
+import { Db,auth} from '../Firebase';
+import { collection, getDocs } from 'firebase/firestore';
+import { Productores } from '../Interfaces/Interfaces';
 
 export default function Home() {
   const features = [
@@ -20,11 +24,30 @@ export default function Home() {
       description: 'Conectamos consumidores directamente con los productores.'
     }
   ];
+  const [Productoress, setProductores] = useState<Productores[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const productsCollection = collection(Db, 'Productores');
+        const productSnapshot = await getDocs(productsCollection);
+        const productList: Productores[] = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Productores));
+        setProductores(productList);
+      } catch (error) {
+        setError((error as Error).message);
+      } 
+    };
+
+    fetchProducts();
+  }, []);
+
 
   return (
     <div className="leaf-pattern">
       {/* Hero Section */}
-      <section className="relative h-screen">
+      <section className="relative py-40">
         <BackgroundCarousel />
         <div className="relative z-10 h-full flex items-center">
           <div className="max-w-7xl mx-auto px-4 text-center">
@@ -69,39 +92,23 @@ export default function Home() {
       <section className="py-16 bg-accent">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8 text-secondary">
-            Nuestros Productores
+            Nuestros Productores:
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="relative rounded-2xl overflow-hidden shadow-soft">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
+          {Productoress.map((productor) => (
+              <div className="relative rounded-2xl overflow-hidden shadow-soft">
               <img
-                src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&q=80&w=800"
-                alt="Productor 1"
-                className="w-full h-64 object-cover"
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                <h3 className="text-white font-semibold text-xl">Finca Orgánica Luna Nueva</h3>
-              </div>
-            </div>
-            <div className="relative rounded-2xl overflow-hidden shadow-soft">
-              <img
-                src="https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&q=80&w=800"
+                src={productor.products[0].image}
                 alt="Productor 2"
                 className="w-full h-64 object-cover"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                <h3 className="text-white font-semibold text-xl">Granja Sostenible El Sol</h3>
+                <h3 className="text-white font-semibold text-xl">{productor.name}</h3>
               </div>
             </div>
-            <div className="relative rounded-2xl overflow-hidden shadow-soft">
-              <img
-                src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=800"
-                alt="Productor 3"
-                className="w-full h-64 object-cover"
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                <h3 className="text-white font-semibold text-xl">Cooperativa Verde Vida</h3>
-              </div>
-            </div>
+            ))}
+            
+            
           </div>
         </div>
       </section>

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { X, ShoppingCart } from 'lucide-react';
-
 interface Product {
   name: string;
   image: string;
@@ -18,6 +17,7 @@ interface PurchaseModalProps {
 }
 
 export default function PurchaseModal({ isOpen, onClose, producer }: PurchaseModalProps) {
+
   const [formData, setFormData] = useState({
     product: '',
     quantity: '',

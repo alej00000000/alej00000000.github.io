@@ -1,37 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Db,auth} from '../Firebase';
+import { collection, getDocs,deleteDoc,doc ,updateDoc} from 'firebase/firestore';
+import { Productores } from '../Interfaces/Interfaces';
 
-interface Producer {
-  id: number;
-  name: string;
-  image: string;
-  description: string;
-  location: string;
-}
 
 export default function AdminDashboard() {
-  const [producers, setProducers] = useState<Producer[]>([
-    {
-      id: 1,
-      name: 'Finca Orgánica Luna Nueva',
-      image: 'https://images.unsplash.com/photo-1595855759920-86582396756a',
-      description: 'Especialistas en vegetales orgánicos y hierbas aromáticas.',
-      location: 'Valle Central',
-    },
-    // Add more initial producers here
-  ]);
 
+  const Identificador = useState("");
+  const [Productoress, setProductores] = useState<Productores[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const productsCollection = collection(Db, 'Productores');
+        const productSnapshot = await getDocs(productsCollection);
+        const productList: Productores[] = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Productores));
+        setProductores(productList);
+      } catch (error) {
+        setError((error as Error).message);
+      } 
+    };
+
+    fetchProducts();
+  }, []);
+
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('isAdmin');
-    navigate('/admin/login');
+    logout();
+    navigate('/adminlogin');
   };
 
-  const handleDelete = (id: number) => {
+  
+
+  const handleDelete =  async (id: string) => {
     if (window.confirm('¿Está seguro de eliminar este productor?')) {
-      setProducers(producers.filter(producer => producer.id !== id));
+    const productDoc = doc(Db, 'productos', id);
+    await deleteDoc(productDoc); 
+    setProductores(Productoress.filter(product => product.id !== id));
     }
   };
 
@@ -72,14 +84,14 @@ export default function AdminDashboard() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {producers.map((producer) => (
+            {Productoress.map((producer) => (
               <tr key={producer.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="h-10 w-10 flex-shrink-0">
                       <img
                         className="h-10 w-10 rounded-full object-cover"
-                        src={producer.image}
+                        src={producer.mainImage}
                         alt={producer.name}
                       />
                     </div>

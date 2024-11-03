@@ -10,7 +10,7 @@ export default function Footer() {
               <div className="bg-primary rounded-full p-2">
                 <Leaf className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold">Riqueza Loca</span>
+              <span className="text-xl font-bold">Riqueza Local</span>
             </div>
             <p className="mt-4 text-gray-300">
               Conectando productores locales con consumidores conscientes para un futuro más sostenible.

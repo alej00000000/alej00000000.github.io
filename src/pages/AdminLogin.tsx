@@ -1,23 +1,33 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock } from 'lucide-react';
+import { HandHelping, Lock } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Db, auth } from '../Firebase';
+import { signInWithEmailAndPassword, getAuth } from 'firebase/auth';
 
 export default function AdminLogin() {
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
+
+  const { login } = useAuth();
+  const [email, setUser] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  HandHelping
+
+  const handleSubmi = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (credentials.email === 'admin@riquezeloca.com' && credentials.password === 'admin123') {
-      localStorage.setItem('isAdmin', 'true');
-      navigate('/admin/dashboard');
-    } else {
-      alert('Credenciales inválidas');
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      alert('Inicio de sesión exitoso');
+      login(email);
+      navigate('/admindashboard');
+    } catch (error) {
+      alert('Error en el inicio de sesión:');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-accent py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-center bg-accent py-40 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary">
@@ -27,7 +37,7 @@ export default function AdminLogin() {
             Acceso Administrativo
           </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmi}>
           <div className="rounded-2xl shadow-soft bg-white p-6">
             <div className="space-y-4">
               <div>
@@ -38,8 +48,8 @@ export default function AdminLogin() {
                   type="email"
                   required
                   className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-text-dark focus:outline-none focus:ring-primary focus:border-primary"
-                  value={credentials.email}
-                  onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+                  value={email}
+                  onChange={(e) => setUser(e.target.value)}
                 />
               </div>
               <div>
@@ -50,8 +60,8 @@ export default function AdminLogin() {
                   type="password"
                   required
                   className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-text-dark focus:outline-none focus:ring-primary focus:border-primary"
-                  value={credentials.password}
-                  onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
             </div>
